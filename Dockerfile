@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3
+FROM pytorch/pytorch:1.10.0-cuda11.3-cudnn8-runtime
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -19,8 +19,16 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && conda init
 
-# Install dependencies
+# Move conda to conda-forge
+RUN conda config --add channels conda-forge \
+    && conda config --remove channels defaults \
+    && conda update -n base --yes conda
+
+# Install dependencies. Removing pytorch deps from yaml: they are already provided by the docker image.
 COPY environment.yaml /root/conda_environment.yaml
+RUN sed '/pytorch/d' /root/conda_environment.yaml > /root/conda_environment.yaml \
+    && sed '/torchvision/d' /root/conda_environment.yaml > /root/conda_environment.yaml \
+    && sed '/cudatoolkit/d' /root/conda_environment.yaml > /root/conda_environment.yaml 
 RUN conda env update -n base -f /root/conda_environment.yaml --prune \
     && conda clean --all --yes
 
