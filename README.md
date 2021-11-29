@@ -1,6 +1,8 @@
 # Machine learning project template
 ![11978-91-1536580089-2](https://user-images.githubusercontent.com/22550252/138448732-e867678f-c845-4428-a482-170412d08486.png)
 
+## Preview
+https://user-images.githubusercontent.com/22550252/143865452-c44cfb7d-12ee-4589-a5ed-5bac6a789965.mp4
 
 
 ## Requirements:
