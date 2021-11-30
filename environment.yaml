@@ -1,15 +1,10 @@
 name: base
 channels:
-  - defaults
-  # - pytorch
-  # - conda-forge
+  - conda-forge
 dependencies:
-  - python=3.8
-  # - pytorch=1.9.0
-  # - cudatoolkit=11.1
-  # - torchvision
+  ### PYTHON, PYTORCH, TORCHVISION, CUDATOOLKIT ARE ALREADY IN THE DOCKER CONTAINER ###
   # - matplotlib
-  # - numpy
+  - numpy
   # - pandas
   # - scipy
   # - seaborn
@@ -17,14 +12,14 @@ dependencies:
   # - scikit-learn
   - pip
   - pip:
-    # - albumentations
-    # - black
+    - albumentations
+    - black
     - flake8
-    # - opencv-python-headless
+    - opencv-python-headless
     # - Pillow
     # - pretrainedmodels
     # - pydicom
-    # - pytorch-lightning
+    - pytorch-lightning
     # - torchsummary
     # - tqdm
     # - statsmodels
