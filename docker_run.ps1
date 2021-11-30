@@ -26,6 +26,7 @@ echo ""
 echo "- Jupyter Lab is now available at: localhost:$jupyter_port/lab" 
 echo "- Jupyter Notebook is available at: localhost:$jupyter_port/tree"
 echo "- To go inside the container use: docker exec -it $container_name bash"
+echo "- To go inside the container and install packages use: docker exec -it --user=root $container_name bash"
 if ($ws) 
 {
     echo "- Inside the container $ws will be available at /ws" 
