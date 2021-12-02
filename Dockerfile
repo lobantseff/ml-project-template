@@ -22,10 +22,9 @@ RUN apt-get update \
 
 # Install dependencies. Removing pytorch deps from yaml: they are already provided by the docker image.
 COPY environment.yaml /root/conda_environment.yaml
-RUN sed '/pytorch/d' /root/conda_environment.yaml > /root/tmp1.yaml \
-    && sed '/torchvision/d' /root/tmp1.yaml > /root/tmp2.yaml \
-    && sed '/cudatoolkit/d' /root/tmp2.yaml > /root/conda_environment.yaml \
-    && rm -rf /root/tmp*.yaml
+RUN sed -i '/pytorch=/d' /root/conda_environment.yaml \
+    && sed -i '/torchvision=/d' /root/conda_environment.yaml \
+    && sed -i '/cudatoolkit=/d' /root/conda_environment.yaml
 RUN conda env update -n base -f /root/conda_environment.yaml --prune \
     && conda clean --all --yes
 
