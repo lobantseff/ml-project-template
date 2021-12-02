@@ -10,3 +10,8 @@ Write-Output $docker_image_name | Out-File ".docker_image_name" -Encoding ASCII
 Write-Output $pwd_string | Out-File ".jupyter_password" -Encoding ASCII
 
 docker build -t $docker_image_name .
+
+# Install the packages in ./src
+docker run -v ${PWD}:/code --name tmp_container $docker_image_name pip install -e .
+docker commit --change='CMD jupyter lab --no-browser' tmp_container $docker_image_name
+docker rm tmp_container
