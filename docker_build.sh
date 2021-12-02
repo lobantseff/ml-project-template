@@ -10,6 +10,7 @@ echo ""
 
 echo $password > .jupyter_password
 echo $docker_image_name > .docker_image_name
+echo "" > .ws_path
 
 docker build -t $docker_image_name \
     --build-arg username=$(whoami) \

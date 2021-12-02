@@ -8,6 +8,7 @@ $pwd_string = Read-Host "Set up password for Jupyter"
 
 Write-Output $docker_image_name | Out-File ".docker_image_name" -Encoding ASCII
 Write-Output $pwd_string | Out-File ".jupyter_password" -Encoding ASCII
+Write-Output "" | Out-File ".ws_path" -Encoding ASCII
 
 docker build -t $docker_image_name .
 

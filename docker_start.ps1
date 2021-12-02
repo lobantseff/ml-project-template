@@ -4,8 +4,12 @@ param([String]$ws="")
 $docker_image_name = Get-Content ".docker_image_name"
 
 # Prompt for workspace folder
-$ws = Read-Host "Absolute path to project workspace folder ['']"
-$ws = ("", $ws)[[bool]$ws]
+$ws = Read-Host "Absolute path to project workspace folder [$ws_dump]"
+$ws = ($ws_dump, $ws)[[bool]$ws]
+if ($ws) 
+{
+    Write-Output $ws | Out-File ".ws_path" -Encoding ASCII
+}
 
 # Prompt for custom container name
 $container_name = Read-Host "Container name [$($docker_image_name)]"

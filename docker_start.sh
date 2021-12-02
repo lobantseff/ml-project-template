@@ -4,8 +4,12 @@
 docker_image_name=$(cat .docker_image_name)
 
 # Prompt for workspace folder
-read -r -p "Absolute path to project workspace folder ['']: " ws
-ws=${ws:-''}
+read -r -p "Absolute path to project workspace folder [$ws_dump]: " ws
+ws=${ws:-$ws_dump}
+if [ "$ws" ]
+then
+    echo $ws > .ws_path
+fi
 
 # Prompt for custom container name
 read -r -p "Container name [$docker_image_name]: " container_name

@@ -14,9 +14,9 @@ https://user-images.githubusercontent.com/22550252/143865452-c44cfb7d-12ee-4589-
 * In Linux shell: `bash docker_build.sh`
 * In Windows PowerShell: `.\docker_build.ps1`
 
-3. **Run:**
-* In Linux shell: `bash docker_run.sh`
-* In Windows PowerShell: `.\docker_run.ps1`
+3. **Start container:**
+* In Linux shell: `bash docker_start.sh`
+* In Windows PowerShell: `.\docker_start.ps1`
 
   
 **Notes:**
