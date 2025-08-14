@@ -248,8 +248,11 @@ echo -e "${GREEN}✓ Using data directory: $data_dir${NC}"
 # Get GPUs configuration
 if [ -z "$gpus_prompt" ]; then
     gpus_env=$(get_env_var gpus)
-    # Remove device= prefix if present in .env
-    gpus_prompt=${gpus_env#device=}
+    # Clean up the GPU specification for user display
+    # Remove quotes and device= prefix if present in .env
+    gpus_prompt=${gpus_env#\"device=}  # Remove "device= prefix
+    gpus_prompt=${gpus_prompt%\"}      # Remove trailing quote
+    gpus_prompt=${gpus_prompt#device=} # Remove device= prefix (if no quotes)
     if [ "$non_interactive" = false ]; then
         read -p "GPUs [${gpus_prompt:-all}]: " gpus_input
         gpus_prompt=${gpus_input:-${gpus_prompt:-all}}
@@ -262,7 +265,8 @@ fi
 if [[ "$gpus_prompt" == "all" ]]; then
     gpus="all"
 else
-    gpus="device=$gpus_prompt"
+    # Always use device= prefix and quote the specification for Docker
+    gpus="\"device=$gpus_prompt\""
 fi
 echo -e "${GREEN}✓ Using GPUs: $gpus_prompt${NC}"
 
@@ -339,7 +343,7 @@ if [ "$rc" == "Y" ]; then
     docker_run_options+=(--rm)
 fi
 
-docker_run_options+=(--gpus "$gpus")
+docker_run_options+=(--gpus $gpus)
 docker_run_options+=(-d)
 if [ "$HOME/.ssh" ]; then
     docker_run_options+=(-v "$HOME/.ssh:/root/.ssh")
@@ -371,7 +375,8 @@ if ! [ -t 0 ] && [ -z "$docker_image_name" ]; then
 fi
 
 # Run the Docker container
-echo -e "${BLUE}Starting container '$container_name' from image '$docker_image_name'...${NC}"
+echo -e "${BLUE}Starting container '$container_name' from image '$docker_image_name' with the command:${NC}"
+echo -e "${YELLOW}>>> docker run ${docker_run_options[*]} $docker_image_name${NC}"
 docker run "${docker_run_options[@]}" "$docker_image_name"
 
 echo ""

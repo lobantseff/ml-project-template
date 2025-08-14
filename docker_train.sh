@@ -330,8 +330,11 @@ echo -e "${GREEN}✓ Using data directory: $data_dir${NC}"
 # Get GPUs configuration
 if [ -z "$gpus_prompt" ]; then
     gpus_env=$(get_env_var gpus)
-    # Remove device= prefix if present in .env
-    gpus_prompt=${gpus_env#device=}
+    # Clean up the GPU specification for user display
+    # Remove quotes and device= prefix if present in .env
+    gpus_prompt=${gpus_env#\"device=}  # Remove "device= prefix
+    gpus_prompt=${gpus_prompt%\"}      # Remove trailing quote
+    gpus_prompt=${gpus_prompt#device=} # Remove device= prefix (if no quotes)
     if [ "$non_interactive" = false ]; then
         read -p "GPUs [${gpus_prompt:-all}]: " gpus_input
         gpus_prompt=${gpus_input:-${gpus_prompt:-all}}
@@ -344,7 +347,8 @@ fi
 if [[ "$gpus_prompt" == "all" ]]; then
     gpus="all"
 else
-    gpus="device=$gpus_prompt"
+    # Always use device= prefix and quote the specification for Docker
+    gpus="\"device=$gpus_prompt\""
 fi
 echo -e "${GREEN}✓ Using GPUs: $gpus_prompt${NC}"
 
@@ -393,7 +397,7 @@ docker_run_options=()
 #     docker_run_options+=(--rm)
 # fi
 
-docker_run_options+=(--gpus "$gpus")
+docker_run_options+=(--gpus $gpus)
 
 # Set run mode (detached or interactive)
 if [ "$detached_mode" = true ]; then
@@ -444,9 +448,7 @@ docker rm "$temp_container_name" >/dev/null 2>&1 || true
 echo -e "${GREEN}✓ Code frozen in image: $frozen_image_name${NC}"
 
 # Set up container mounts (no code mount since it's frozen in the image)
-if [ "$HOME/.ssh" ]; then
-    docker_run_options+=(-v "$HOME/.ssh:/root/.ssh")
-fi
+docker_run_options+=(-v "$HOME/.ssh:/root/.ssh")
 if [ "$SSH_AUTH_SOCK" ]; then
     docker_run_options+=(-v "$SSH_AUTH_SOCK:/ssh-agent")
     docker_run_options+=(-e "SSH_AUTH_SOCK=/ssh-agent")
@@ -479,7 +481,7 @@ fi
 
 # Run the Docker container with the training command
 echo -e "${BLUE}Starting training container '$container_name' from frozen image '$frozen_image_name'...${NC}"
-docker run "${docker_run_options[@]}" "$frozen_image_name" python src/mlproject/main.py
+docker run "${docker_run_options[@]}" "$frozen_image_name" python src/segformer_devicenet/main.py
 
 if [ "$detached_mode" = true ]; then
     echo ""
@@ -493,7 +495,7 @@ if [ "$detached_mode" = true ]; then
     echo -e "• ${YELLOW}Experiment dir:${NC} $experiment_dir"
     echo -e "• ${YELLOW}Base image:${NC} $docker_image_name"
     echo -e "• ${YELLOW}Frozen image:${NC} $frozen_image_name"
-    echo -e "• ${YELLOW}Training command:${NC} python src/mlproject/main.py"
+    echo -e "• ${YELLOW}Training command:${NC} python src/segformer_devicenet/main.py"
     echo -e "• ${YELLOW}Code:${NC} frozen in container (reproducible)"
     echo -e "• ${YELLOW}Workspace:${NC} $ws → /ws"
     echo -e "• ${YELLOW}Data:${NC} $data_dir → /data (read-only)"
@@ -516,7 +518,7 @@ if [ "$detached_mode" = true ]; then
     • Experiment: $experiment_name
     • Base image: $docker_image_name
     • Frozen image: $frozen_image_name
-    • Training command: python src/mlproject/main.py
+    • Training command: python src/segformer_devicenet/main.py
     • Code: frozen in container (reproducible)
     • Workspace: $ws → /ws
     • Data: $data_dir → /data (read-only)
